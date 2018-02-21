@@ -583,11 +583,21 @@ failed:
 #if SIO_TLS
     client_impl::context_ptr client_impl::on_tls_init(connection_hdl conn)
     {
-        context_ptr ctx = context_ptr(new  boost::asio::ssl::context(boost::asio::ssl::context::tlsv1));
+        context_ptr ctx = context_ptr(new  boost::asio::ssl::context(boost::asio::ssl::context::tlsv12));
         boost::system::error_code ec;
         ctx->set_options(boost::asio::ssl::context::default_workarounds |
                              boost::asio::ssl::context::no_sslv2 |
-                             boost::asio::ssl::context::single_dh_use,ec);
+                             boost::asio::ssl::context::no_sslv3 |
+                             boost::asio::ssl::context::no_tlsv1 |
+                             boost::asio::ssl::context::no_tlsv1_1 |
+                             boost::asio::ssl::context::single_dh_use, ec);
+        ctx->set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
+
+        ctx->set_default_verify_paths();
+
+        auto hostname = websocketpp::uri(m_base_url).get_host();
+        ctx->set_verify_callback(boost::asio::ssl::rfc2818_verification(hostname));
+
         if(ec)
         {
             cerr<<"Init tls failed,reason:"<< ec.message()<<endl;
