@@ -140,13 +140,12 @@ namespace sio
         m_con_state = con_closing;
         this->sockets_invoke_void(&sio::socket::close);
         m_client.get_io_service().dispatch(lib::bind(&client_impl::close_impl, this,close::status::normal,"End by user"));
+        m_client.get_io_service().stop();
     }
 
     void client_impl::sync_close()
     {
-        m_con_state = con_closing;
-        this->sockets_invoke_void(&sio::socket::close);
-        m_client.get_io_service().dispatch(lib::bind(&client_impl::close_impl, this,close::status::normal,"End by user"));
+        this->close();
         if(m_network_thread)
         {
             m_network_thread->join();
