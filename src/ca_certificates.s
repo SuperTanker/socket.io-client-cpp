@@ -1,7 +1,5 @@
 .global embedded_cacerts_data, embedded_cacerts_size
 
-.section .rodata
-
 embedded_cacerts_data:
 .incbin "../data/cacert.pem"
 embedded_cacerts_data_end:
