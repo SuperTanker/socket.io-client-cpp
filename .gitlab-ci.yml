@@ -1,0 +1,41 @@
+before_script:
+  - dmenv install
+
+stages:
+  - build
+  - deploy
+
+build/linux:
+  stage: build
+  tags:
+    - linux
+  script:
+    - dmenv run -- python run-ci.py deploy --profile gcc8 --profile android --build-only --ref ${CI_COMMIT_REF_NAME}
+
+build/macos:
+  stage: build
+  tags:
+    - macos
+  script:
+    - dmenv run -- python run-ci.py deploy --profile macos --profile ios --build-only --ref ${CI_COMMIT_REF_NAME}
+
+.deploy:
+  stage: deploy
+  only:
+    - /\Atesting\/.*/
+    - /\Astable\/.*/
+
+deploy/linux:
+  extends: .deploy
+  tags:
+    - linux
+  script:
+    - dmenv run -- python run-ci.py deploy --profile gcc8 --profile android --ref ${CI_COMMIT_REF_NAME}
+
+
+deploy/macos:
+  extends: .deploy
+  tags:
+    - macos
+  script:
+    - dmenv run -- python run-ci.py deploy --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME}
