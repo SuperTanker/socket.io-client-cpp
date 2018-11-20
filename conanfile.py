@@ -51,6 +51,7 @@ class SocketIOClientCppConan(ConanFile):
         self.copy("*", src=include_path, dst="include")
         self.copy("*libsioclient.*", src=os.path.join(self.build_folder, "lib"), dst="lib")
         self.copy("lib*.pdb", dst="lib", keep_path=False)
+        self.copy("*LICENSE", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ["sioclient"]
