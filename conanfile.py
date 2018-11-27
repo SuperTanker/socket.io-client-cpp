@@ -10,7 +10,7 @@ class SocketIOClientCppConan(ConanFile):
     repo_url = "https://github.com/SuperTanker/socket.io-client-cpp"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False], "with_ssl": [True, False], "embed_cacerts": [True, False]}
-    default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=False"
+    default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=True"
     generators = "cmake"
     exports_sources = "*.patch"
     requires = "Boost/1.66.0@tanker/testing"
@@ -22,9 +22,6 @@ class SocketIOClientCppConan(ConanFile):
     def configure(self):
         if tools.cross_building(self.settings):
             del self.settings.compiler.libcxx
-
-        if self.options.with_ssl:
-            self.options["Boost"].with_ssl = self.options.with_ssl
 
     def source(self):
         self.run("git clone %s --single-branch --branch %s --recurse-submodules" % (self.repo_url, self.lib_tag))
