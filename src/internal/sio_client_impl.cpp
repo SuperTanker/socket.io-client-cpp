@@ -7,6 +7,7 @@
 //
 
 #include "sio_client_impl.h"
+#include "url_encode.h"
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <mutex>
@@ -93,9 +94,9 @@ namespace sio
         string query_str;
         for(map<string,string>::const_iterator it=query.begin();it!=query.end();++it){
             query_str.append("&");
-            query_str.append(it->first);
+            query_str.append(Misc::urlencode(it->first));
             query_str.append("=");
-            query_str.append(it->second);
+            query_str.append(Misc::urlencode(it->second));
         }
         m_query_string=move(query_str);
 
