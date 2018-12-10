@@ -2,7 +2,7 @@ before_script:
   - dmenv install
 
 variables:
-  SDK_NATIVE_COMMIT_HASH: '9105d10ba426f88577ea1fd11ab1331ebc4f16eb'
+  SDK_NATIVE_COMMIT_HASH: '7f341b19b1d875f6fba4434f64fb86905ec4834c'
 
 stages:
   - build
