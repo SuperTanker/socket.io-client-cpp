@@ -30,14 +30,10 @@ class SocketIOClientCppConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        if self.options.shared:
-            cmake.definitions["BUILD_SHARED_LIBS"] = "ON"
-        if self.options.fPIC:
-            cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
-        if self.options.with_ssl:
-            cmake.definitions["BUILD_WITH_TLS"] = "ON"
-        if self.options.embed_cacerts:
-            cmake.definitions["EMBED_CACERTS"] = "ON"
+        cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
+        cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
+        cmake.definitions["BUILD_WITH_TLS"] = self.options.with_ssl
+        cmake.definitions["EMBED_CACERTS"] = self.options.embed_cacerts
         cmake.configure(source_dir=self.socketio_src)
         cmake.build()
         cmake.install()
