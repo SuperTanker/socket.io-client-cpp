@@ -20,6 +20,8 @@ class SocketIOClientCppConan(ConanFile):
         return os.path.join(self.source_folder, self.name)
 
     def configure(self):
+        if not self.options.with_ssl and self.options.embed_cacerts:
+            raise Exception("cannot embed cacerts without ssl")
         if tools.cross_building(self.settings):
             del self.settings.compiler.libcxx
 
