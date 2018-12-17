@@ -14,7 +14,7 @@ build/linux:
     - linux
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile gcc8 --profile android --build-only --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py deploy --profile android --build-only --ref ${CI_COMMIT_REF_NAME}
 
 build/macos:
   stage: build
@@ -31,7 +31,7 @@ deploy/linux:
   when: manual
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile gcc8 --profile android --ref ${CI_COMMIT_REF_NAME} --native-commit-hash ${SDK_NATIVE_COMMIT_HASH}
+    - dmenv run -- python run-ci.py deploy --profile android --ref ${CI_COMMIT_REF_NAME} --native-commit-hash ${SDK_NATIVE_COMMIT_HASH}
 
 
 deploy/macos:
