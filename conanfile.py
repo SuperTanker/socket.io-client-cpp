@@ -5,9 +5,9 @@ import os
 class SocketIOClientCppConan(ConanFile):
     name = "socket.io-client-cpp"
     version = "1.6.1"
-    lib_tag = version + "-t18"
+    lib_tag = version + "-t19"
     license = "MIT"
-    repo_url = "https://github.com/SuperTanker/socket.io-client-cpp"
+    repo_url = "https://github.com/TankerHQ/socket.io-client-cpp"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False], "with_ssl": [True, False], "embed_cacerts": [True, False]}
     default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=False"
