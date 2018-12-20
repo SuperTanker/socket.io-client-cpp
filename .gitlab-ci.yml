@@ -1,9 +1,6 @@
 before_script:
   - dmenv install
 
-variables:
-  SDK_NATIVE_COMMIT_HASH: '0ecca19f78d999d35e67af6b522d695a637cf52b'
-
 stages:
   - build
   - deploy
@@ -12,33 +9,18 @@ build/linux:
   stage: build
   tags:
     - linux
+  only:
+    - web
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile android --build-only --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py deploy --profile android --ref ${CI_COMMIT_REF_NAME}
 
 build/macos:
   stage: build
+  only:
+    - web
   tags:
     - macos
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile macos --profile ios --build-only --ref ${CI_COMMIT_REF_NAME}
-
-deploy/linux:
-  stage: deploy
-  tags:
-    - linux
-  when: manual
-  script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile android --ref ${CI_COMMIT_REF_NAME} --native-commit-hash ${SDK_NATIVE_COMMIT_HASH}
-
-
-deploy/macos:
-  stage: deploy
-  tags:
-    - macos
-  when: manual
-  script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME} --native-commit-hash ${SDK_NATIVE_COMMIT_HASH}
+    - dmenv run -- python run-ci.py deploy --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME}

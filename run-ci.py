@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 
 import ci.cpp
@@ -8,14 +9,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title="subcommands", dest="command")
 
-    clean_cache_parser = subparsers.add_parser("clean-conan-cache")
+    subparsers.add_parser("clean-conan-cache")
 
     build_parser = subparsers.add_parser("deploy")
     build_parser.add_argument(
         "--profile", action="append", dest="profiles", required=True
     )
     build_parser.add_argument("--user", default="tanker")
-    build_parser.add_argument("--build-only", action="store_false", dest="upload")
     build_parser.add_argument("--ref", required=True)
     build_parser.add_argument("--native-commit-hash", dest="native_commit_hash")
 
@@ -25,10 +25,7 @@ def main() -> None:
     if args.command == "clean-conan-cache":
         ci.cpp.clean_conan_cache()
     elif args.command == "deploy":
-        if args.upload and not args.native_commit_hash:
-            sys.exit("--native-commit-hash must be passed when uploading")
-        if not args.upload and args.native_commit_hash:
-            sys.exit("--native-commit-hash cannot be used with --build-only")
+        native_commit_hash = os.environ.get("SDK_NATIVE_COMMIT_HASH")
         channel, version = args.ref.split("/")
         deployer = ci.cpp.Deployer(
             channel=channel,
@@ -36,8 +33,8 @@ def main() -> None:
             profiles=args.profiles, user=args.user,
         )
         deployer.build(
-            upload=args.upload,
-            native_commit_hash=args.native_commit_hash,
+            upload=True,
+            native_commit_hash=native_commit_hash,
         )
     else:
         parser.print_help()
