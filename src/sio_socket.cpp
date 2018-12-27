@@ -6,7 +6,7 @@
 #include <queue>
 #include <cstdarg>
 
-#if DEBUG || _DEBUG
+#if DEBUG
 #define LOG(x) std::cout << x
 #else
 #define LOG(x)
