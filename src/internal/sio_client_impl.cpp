@@ -13,7 +13,7 @@
 #include <mutex>
 #include <cmath>
 // Comment this out to disable handshake logging to stdout
-#if DEBUG || _DEBUG
+#if DEBUG
 #define LOG(x) std::cout << x
 #else
 #define LOG(x)
@@ -36,7 +36,7 @@ namespace sio
         m_reconn_delay_max(25000)
     {
         using websocketpp::log::alevel;
-#ifndef DEBUG
+#if DEBUG
         m_client.clear_access_channels(alevel::all);
         m_client.set_access_channels(alevel::connect|alevel::disconnect|alevel::app);
 #endif

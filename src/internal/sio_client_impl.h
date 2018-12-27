@@ -13,7 +13,7 @@
 #define INTIALIZER(__TYPE__) (__TYPE__)
 #endif
 #include <websocketpp/client.hpp>
-#if _DEBUG || DEBUG
+#if DEBUG
 #if SIO_TLS
 #include <websocketpp/config/debug_asio.hpp>
 typedef websocketpp::config::debug_asio_tls client_config;
