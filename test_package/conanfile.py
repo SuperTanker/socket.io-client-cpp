@@ -22,7 +22,11 @@ class SocketioclientcppTestConan(ConanFile):
 
     def test(self):
         if tools.cross_building(self.settings):
-            assert(os.path.exists(os.path.join("bin", "example")))
+            if self.settings.os == "Emscripten":
+                exe_name = "example.js"
+            else:
+                exe_name = "example"
+            assert(os.path.exists(os.path.join("bin", exe_name)))
         else:
             env = ""
             if self.settings.os == "Macos":
