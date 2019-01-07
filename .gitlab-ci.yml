@@ -13,7 +13,7 @@ build/linux:
     - web
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile android --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py deploy --profile android --profile emscripten --ref ${CI_COMMIT_REF_NAME}
 
 build/macos:
   stage: build
