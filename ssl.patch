@@ -1,0 +1,51 @@
+diff --git a/src/internal/sio_client_impl.cpp b/src/internal/sio_client_impl.cpp
+index 78f48a0..f4230e6 100644
+--- a/src/internal/sio_client_impl.cpp
++++ b/src/internal/sio_client_impl.cpp
+@@ -15,6 +15,11 @@
+ #include <sstream>
+ #ifdef SIO_TLS
+ #include <openssl/ssl.h>
++#ifdef _WIN32
++#include <windows.h>
++#include <wincrypt.h>
++#include <cryptuiapi.h>
++#endif
+ #endif
+ // Comment this out to disable handshake logging to stdout
+ #if DEBUG
+@@ -585,6 +590,34 @@ client_impl::context_ptr client_impl::on_tls_init(connection_hdl conn) {
+ #ifdef SIO_EMBED_CACERTS
+   add_certificate_authority(ctx->native_handle(), embedded_cacerts_data,
+                             embedded_cacerts_size);
++#elif defined(_WIN32)
++	HCERTSTORE hStore;
++    PCCERT_CONTEXT pContext = NULL;
++    X509 *x509;
++    X509_STORE *store = ctx->native_handle()->cert_store;
++
++    hStore = CertOpenSystemStore(NULL, "ROOT");
++
++    // TODO throw
++    if (!hStore)
++        return ctx;
++
++    while (pContext = CertEnumCertificatesInStore(hStore, pContext))
++    {
++        //uncomment the line below if you want to see the certificates as pop ups
++        //CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, pContext,   NULL, NULL, 0, NULL);
++
++        x509 = NULL;
++        x509 = d2i_X509(NULL, (const unsigned char **)&pContext->pbCertEncoded, pContext->cbCertEncoded);
++        if (x509)
++        {
++            X509_STORE_add_cert(store, x509);
++            X509_free(x509);
++        }
++    }
++
++CertFreeCertificateContext(pContext);
++CertCloseStore(hStore, 0);
+ #endif
+ 
+   auto hostname = websocketpp::uri(m_base_url).get_host();

@@ -31,6 +31,8 @@ class SocketIOClientCppConan(ConanFile):
             self.run("git submodule update --remote")
 
     def build(self):
+        tools.patch(patch_file="ssl.patch", base_path=self.name)
+
         cmake = CMake(self)
         cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
         cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
@@ -44,9 +46,15 @@ class SocketIOClientCppConan(ConanFile):
         # socketio installs in src/build (hardcoded in cmakelists)
         include_path = os.path.join(self.socketio_src, "build", "include", "src")
         self.copy("*", src=include_path, dst="include")
-        self.copy("*libsioclient.*", src=os.path.join(self.build_folder, "lib"), dst="lib")
-        self.copy("lib*.pdb", dst="lib", keep_path=False)
+        self.copy("*.a", dst="lib", keep_path=False)
+        self.copy("*.so*", dst="lib", keep_path=False)
+        self.copy("*.dylib", dst="lib", keep_path=False)
+        self.copy("*.lib", dst="lib", keep_path=False)
+        self.copy("*.dll", dst="bin", keep_path=False)
+        self.copy("*.pdb", dst="lib", keep_path=False)
         self.copy("*LICENSE", dst="licenses", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ["sioclient"]
+        if self.settings.os == "Windows" and self.options.with_ssl:
+            self.cpp_info.libs.extend(["crypt32"])
