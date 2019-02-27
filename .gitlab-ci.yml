@@ -18,7 +18,7 @@ build/linux:
   tags: [linux]
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py build --profile android --profile emscripten --profile gcc8 --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py build --profile android --profile gcc8 --ref ${CI_COMMIT_REF_NAME}
 
 build/macos:
   extends: .build
@@ -51,7 +51,7 @@ deploy/linux:
     # packages built by the runner and the distros used by Tanker devs. We have decided to *not* solve it
     # but the rest of the CI scripts assume the desktop binaries packages do not exist.
     # TODO: once the CI scripts are fixed, re-add the gcc8 profile, like in build/linux
-    - dmenv run -- python run-ci.py deploy --profile android --profile emscripten --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py deploy --profile android --ref ${CI_COMMIT_REF_NAME}
 
 deploy/macos:
   extends: .deploy
