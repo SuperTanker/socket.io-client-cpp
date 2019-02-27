@@ -1,3 +1,5 @@
+image: tanker.local:5000/ci-cpp:latest
+
 before_script:
   - dmenv install
 
@@ -5,22 +7,62 @@ stages:
   - build
   - deploy
 
-build/linux:
+.build:
   stage: build
-  tags:
-    - linux
-  only:
-    - web
+  except:
+    - /\Atesting/.*\z/
+    - /\Astable/.*\z/
+
+build/linux:
+  extends: .build
+  tags: [linux]
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile android --profile emscripten --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py build --profile android --profile emscripten --profile gcc8 --ref ${CI_COMMIT_REF_NAME}
 
 build/macos:
-  stage: build
+  extends: .build
+  tags: [macos]
+  script:
+    - dmenv run -- python run-ci.py clean-conan-cache
+    - dmenv run -- python run-ci.py build --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME}
+
+build/windows:
+  extends: .build
+  tags: [windows]
+  script:
+    - dmenv run -- python run-ci.py clean-conan-cache
+    - dmenv run -- python run-ci.py build --profile windows --ref %CI_COMMIT_REF_NAME%
+
+
+.deploy:
+  stage: deploy
   only:
     - web
-  tags:
-    - macos
+    - /\Atesting/.*\z/
+    - /\Astable/.*\z/
+
+deploy/linux:
+  extends: .deploy
+  tags: [linux]
+  script:
+    - dmenv run -- python run-ci.py clean-conan-cache
+    # Note: linux desktop binaries upload are temporarly skipped. We have a binary compatibility issue between
+    # packages built by the runner and the distros used by Tanker devs. We have decided to *not* solve it
+    # but the rest of the CI scripts assume the desktop binaries packages do not exist.
+    # TODO: once the CI scripts are fixed, re-add the gcc8 profile, like in build/linux
+    - dmenv run -- python run-ci.py deploy --profile android --profile emscripten --ref ${CI_COMMIT_REF_NAME}
+
+deploy/macos:
+  extends: .deploy
+  tags: [macos]
   script:
     - dmenv run -- python run-ci.py clean-conan-cache
     - dmenv run -- python run-ci.py deploy --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME}
+
+deploy/windows:
+  extends: .deploy
+  tags: [windows]
+  script:
+    - dmenv run -- python run-ci.py clean-conan-cache
+    - dmenv run -- python run-ci.py deploy --profile windows --ref %CI_COMMIT_REF_NAME%
