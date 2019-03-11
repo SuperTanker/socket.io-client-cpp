@@ -13,7 +13,7 @@ class SocketIOClientCppConan(ConanFile):
     default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=False"
     generators = "cmake"
     exports_sources = "*.patch"
-    requires = "Boost/1.68.0@tanker/testing"
+    requires = "Boost/1.68.0@tanker/testing", "LibreSSL/2.6.3@tanker/testing"
 
     @property
     def socketio_src(self):
