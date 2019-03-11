@@ -24,7 +24,8 @@ class SocketIOClientCppConan(ConanFile):
 
     def requirements(self):
         self.requires("Boost/1.68.0@tanker/testing")
-        self.requires("LibreSSL/2.9.2@tanker/testing")
+        if self.options.with_ssl:
+            self.requires("LibreSSL/2.9.2@tanker/testing")
         if self.is_mingw:
             self.requires("mingw-threads/1.0.0@tanker/testing")
 
