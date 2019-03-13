@@ -17,28 +17,24 @@ build/linux:
   extends: .build
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py build --profile android --profile gcc8 --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py build
 
 build/macos:
   extends: .build
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py build --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py build
 
 build/windows:
   extends: .build
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py build --profile windows --ref %CI_COMMIT_REF_NAME%
+    - dmenv run -- python run-ci.py build
 
 
 .deploy:
   stage: deploy
   only:
-    - web
     - /\Atesting/.*\z/
     - /\Astable/.*\z/
 
@@ -46,23 +42,16 @@ deploy/linux:
   extends: .deploy
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    # Note: linux desktop binaries upload are temporarly skipped. We have a binary compatibility issue between
-    # packages built by the runner and the distros used by Tanker devs. We have decided to *not* solve it
-    # but the rest of the CI scripts assume the desktop binaries packages do not exist.
-    # TODO: once the CI scripts are fixed, re-add the gcc8 profile, like in build/linux
-    - dmenv run -- python run-ci.py deploy --profile android --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py deploy
 
 deploy/macos:
   extends: .deploy
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile macos --profile ios --ref ${CI_COMMIT_REF_NAME}
+    - dmenv run -- python run-ci.py deploy
 
 deploy/windows:
   extends: .deploy
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py clean-conan-cache
-    - dmenv run -- python run-ci.py deploy --profile windows --ref %CI_COMMIT_REF_NAME%
+    - dmenv run -- python run-ci.py deploy
