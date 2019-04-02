@@ -14,9 +14,9 @@ def main() -> None:
     args = parser.parse_args()
     command = args.command
 
+    ci.cpp.set_home_isolation()
     ci.cpp.update_conan_config()
     should_upload = command == "deploy"
-    ci.cpp.set_home_isolation()
     ci.cpp.build_recipe(Path.getcwd(), upload=should_upload, conan_reference=None)
 
 
