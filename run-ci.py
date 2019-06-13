@@ -2,6 +2,7 @@ import argparse
 from path import Path
 
 import ci.cpp
+import ci.conan
 
 
 def main() -> None:
@@ -14,7 +15,7 @@ def main() -> None:
     args = parser.parse_args()
     command = args.command
 
-    ci.cpp.set_home_isolation()
+    ci.conan.set_home_isolation()
     ci.cpp.update_conan_config()
     should_upload = command == "deploy"
     ci.cpp.build_recipe(Path.getcwd(), upload=should_upload, conan_reference=None)
