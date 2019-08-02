@@ -4,7 +4,6 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
 option(BUILD_SHARED_LIBS "Build the shared library" OFF)
-option(EMBED_CACERTS "Use embedded CA certificates" OFF)
 option(BUILD_WITH_TLS "Enable ssl support" ON)
 
 set(MAJOR 1)
@@ -21,19 +20,7 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/internal ALL_SRC)
 file(GLOB ALL_HEADERS ${CMAKE_CURRENT_LIST_DIR}/src/*.h )
 set(SIO_INCLUDEDIR ${CMAKE_CURRENT_LIST_DIR})
 
-if(EMBED_CACERTS)
-enable_language(ASM)
-if (CMAKE_SYSTEM_NAME MATCHES Darwin)
-  set(CMAKE_ASM_FLAGS "${CMAKE_CXX_FLAGS} -x assembler-with-cpp")
-endif()
-set(ALL_SRC ${ALL_SRC} "${CMAKE_CURRENT_LIST_DIR}/src/ca_certificates.s")
-endif()
-
 add_library(sioclient ${ALL_SRC})
-
-if(EMBED_CACERTS)
-target_compile_definitions(sioclient PRIVATE SIO_EMBED_CACERTS)
-endif()
 
 if(BUILD_WITH_TLS)
 target_compile_definitions(sioclient PRIVATE -DSIO_TLS)

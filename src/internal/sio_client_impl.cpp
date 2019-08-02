@@ -12,12 +12,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <mutex>
 #include <cmath>
-#include <cstdint>
-#include <mutex>
-#include <sstream>
-#ifdef SIO_TLS
-#include <openssl/ssl.h>
-#endif
 // Comment this out to disable handshake logging to stdout
 #if DEBUG || _DEBUG
 #define LOG(x) std::cout << x
@@ -27,11 +21,6 @@
 
 using boost::posix_time::milliseconds;
 using namespace std;
-
-#ifdef SIO_EMBED_CACERTS
-extern const char embedded_cacerts_data[];
-extern unsigned embedded_cacerts_size;
-#endif
 
 namespace sio
 {
@@ -68,13 +57,13 @@ namespace sio
 
         m_packet_mgr.set_encode_callback(lib::bind(&client_impl::on_encode,this,_1,_2));
     }
-
+    
     client_impl::~client_impl()
     {
         this->sockets_invoke_void(&sio::socket::on_close);
         sync_close();
     }
-
+    
     void client_impl::connect(const string& uri, const map<string,string>& query)
     {
         if(m_reconn_timer)
@@ -396,7 +385,7 @@ namespace sio
             if(m_fail_listener)m_fail_listener();
         }
     }
-
+    
     void client_impl::on_open(connection_hdl con)
     {
         LOG("Connected." << endl);
@@ -407,7 +396,7 @@ namespace sio
         this->socket("");
         if(m_open_listener)m_open_listener();
     }
-
+    
     void client_impl::on_close(connection_hdl con)
     {
         LOG("Client Disconnected." << endl);
@@ -422,7 +411,7 @@ namespace sio
         {
             code = conn_ptr->get_local_close_code();
         }
-
+        
         m_con.reset();
         this->clear_timers();
         client::close_reason reason;
@@ -447,13 +436,13 @@ namespace sio
             }
             reason = client::close_reason_drop;
         }
-
+        
         if(m_close_listener)
         {
             m_close_listener(reason);
         }
     }
-
+    
     void client_impl::on_message(connection_hdl con, client_type::message_ptr msg)
     {
         if (m_ping_timeout_timer) {
@@ -464,7 +453,7 @@ namespace sio
         // Parse the incoming message according to socket.IO rules
         m_packet_mgr.put_payload(msg->get_payload());
     }
-
+    
     void client_impl::on_handshake(message::ptr const& message)
     {
         if(message && message->get_flag() == message::flag_object)
@@ -559,13 +548,13 @@ failed:
             break;
         }
     }
-
+    
     void client_impl::on_encode(bool isBinary,shared_ptr<const string> const& payload)
     {
         LOG("encoded payload length:"<<payload->length()<<endl);
         m_client.get_io_service().dispatch(lib::bind(&client_impl::send_impl,this,payload,isBinary?frame::opcode::binary:frame::opcode::text));
     }
-
+    
     void client_impl::clear_timers()
     {
         LOG("clear timers"<<endl);
@@ -581,44 +570,15 @@ failed:
             m_ping_timer.reset();
         }
     }
-
+    
     void client_impl::reset_states()
     {
         m_client.reset();
         m_sid.clear();
         m_packet_mgr.reset();
     }
-
-
+    
 #if SIO_TLS
-#ifdef SIO_EMBED_CACERTS
-    // Boost is buggy and doesn't correctly load certs from memory (from file works). This loads from memory ourselves.
-    void add_certificate_authority(SSL_CTX* ctx, const void* certs_data, size_t certs_size)
-    {
-        BIO* bio = BIO_new_mem_buf(const_cast<void*>(certs_data), certs_size);
-        if (!bio)
-            return;
-
-        char empty_string[1] = {'\0'}; // Can't be a literal, OpenSSL wants a NON-const empty string!
-        STACK_OF(X509_INFO) *inf = PEM_X509_INFO_read_bio(bio, nullptr, nullptr, empty_string);
-        if (!inf)
-            goto error_inf;
-
-        for (int i = 0; i < sk_X509_INFO_num(inf); i++) {
-            X509_INFO* itmp = sk_X509_INFO_value(inf, i);
-            if (itmp->x509) {
-                if (!X509_STORE_add_cert(ctx->cert_store, itmp->x509))
-                    goto error;
-            }
-        }
-
-    error:
-        sk_X509_INFO_pop_free(inf, X509_INFO_free);
-    error_inf:
-        ::BIO_free(bio);
-    }
-#endif
-
     client_impl::context_ptr client_impl::on_tls_init(connection_hdl conn)
     {
         context_ptr ctx = context_ptr(new  boost::asio::ssl::context(boost::asio::ssl::context::tlsv12));
@@ -629,12 +589,9 @@ failed:
                              boost::asio::ssl::context::no_tlsv1 |
                              boost::asio::ssl::context::no_tlsv1_1 |
                              boost::asio::ssl::context::single_dh_use, ec);
-        ctx->set_default_verify_paths();
         ctx->set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
 
-#ifdef SIO_EMBED_CACERTS
-        add_certificate_authority(ctx->native_handle(), embedded_cacerts_data, embedded_cacerts_size);
-#endif
+        ctx->set_default_verify_paths();
 
         auto hostname = websocketpp::uri(m_base_url).get_host();
         ctx->set_verify_callback(boost::asio::ssl::rfc2818_verification(hostname));
@@ -643,7 +600,7 @@ failed:
         {
             cerr<<"Init tls failed,reason:"<< ec.message()<<endl;
         }
-
+        
         return ctx;
     }
 #endif
