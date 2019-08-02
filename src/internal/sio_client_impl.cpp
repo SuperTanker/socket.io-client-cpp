@@ -591,7 +591,8 @@ failed:
                              boost::asio::ssl::context::single_dh_use, ec);
         ctx->set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
 
-        ctx->set_default_verify_paths();
+        if (m_init_ssl_ctx)
+          m_init_ssl_ctx(ctx->native_handle());
 
         auto hostname = websocketpp::uri(m_base_url).get_host();
         ctx->set_verify_callback(boost::asio::ssl::rfc2818_verification(hostname));

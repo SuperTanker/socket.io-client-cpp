@@ -31,6 +31,8 @@ namespace sio
         typedef std::function<void(unsigned, unsigned)> reconnect_listener;
         
         typedef std::function<void(std::string const& nsp)> socket_listener;
+
+        typedef std::function<void(void* ssl_ctx)> ssl_init_type;
         
         client();
         ~client();
@@ -49,6 +51,8 @@ namespace sio
         void set_socket_open_listener(socket_listener const& l);
         
         void set_socket_close_listener(socket_listener const& l);
+
+        void set_init_ssl_ctx(ssl_init_type const& l);
         
         void clear_con_listeners();
         

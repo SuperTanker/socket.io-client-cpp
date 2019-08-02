@@ -57,6 +57,11 @@ namespace sio
     {
         m_impl->set_socket_close_listener(l);
     }
+
+    void client::set_init_ssl_ctx(ssl_init_type const& l)
+    {
+        m_impl->set_init_ssl_ctx(l);
+    }
     
     void client::clear_con_listeners()
     {
