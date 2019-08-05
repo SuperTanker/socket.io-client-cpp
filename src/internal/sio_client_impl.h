@@ -77,6 +77,8 @@ namespace sio
         SYNTHESIS_SETTER(client::socket_listener,socket_open_listener)
         
         SYNTHESIS_SETTER(client::socket_listener,socket_close_listener)
+
+        SYNTHESIS_SETTER(client::ssl_init_type,init_ssl_ctx)
         
 #undef SYNTHESIS_SETTER
         
@@ -209,6 +211,8 @@ namespace sio
         
         client::socket_listener m_socket_open_listener;
         client::socket_listener m_socket_close_listener;
+
+        client::ssl_init_type m_init_ssl_ctx;
         
         std::map<const std::string,socket::ptr> m_sockets;
         
