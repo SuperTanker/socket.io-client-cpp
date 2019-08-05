@@ -12,7 +12,6 @@ class SocketIOClientCppConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False], "with_ssl": [True, False], "embed_cacerts": [True, False]}
     default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=False"
     generators = "cmake"
-    exports_sources = "*.patch"
     requires = "Boost/1.68.0@tanker/testing", "LibreSSL/2.6.3@tanker/testing"
 
     @property
@@ -31,8 +30,6 @@ class SocketIOClientCppConan(ConanFile):
             self.run("git submodule update --remote")
 
     def build(self):
-        tools.patch(patch_file="ssl.patch", base_path=self.name)
-
         cmake = CMake(self)
         cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
         cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
