@@ -4,8 +4,8 @@ import os
 
 class SocketIOClientCppConan(ConanFile):
     name = "socket.io-client-cpp"
-    version = "1.6.1"
-    lib_tag = version + "-t21"
+    version = "1.6.2"
+    lib_tag = version + ""
     license = "MIT"
     repo_url = "https://github.com/TankerHQ/socket.io-client-cpp"
     settings = "os", "compiler", "build_type", "arch"
