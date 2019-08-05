@@ -36,8 +36,8 @@ namespace sio
         m_reconn_delay_max(25000)
     {
         using websocketpp::log::alevel;
-#if DEBUG
         m_client.clear_access_channels(alevel::all);
+#if DEBUG
         m_client.set_access_channels(alevel::connect|alevel::disconnect|alevel::app);
 #endif
         // Initialize the Asio transport policy
