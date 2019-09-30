@@ -12,17 +12,25 @@ class SocketIOClientCppConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False], "with_ssl": [True, False], "embed_cacerts": [True, False]}
     default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=False"
     generators = "cmake"
-    requires = "Boost/1.68.0@tanker/testing", "LibreSSL/2.6.3@tanker/testing"
+    exports_sources = "*.patch"
+
+    @property
+    def is_mingw(self):
+        return self.settings.os == "Windows" and self.settings.compiler == "gcc"
 
     @property
     def socketio_src(self):
         return os.path.join(self.source_folder, self.name)
 
+    def requirements(self):
+        self.requires("Boost/1.68.0@tanker/testing")
+        self.requires("LibreSSL/2.9.2@tanker/testing")
+        if self.is_mingw:
+            self.requires("mingw-threads/1.0.0@tanker/testing")
+
     def configure(self):
         if not self.options.with_ssl and self.options.embed_cacerts:
             raise Exception("cannot embed cacerts without ssl")
-        if tools.cross_building(self.settings):
-            del self.settings.compiler.libcxx
 
     def source(self):
         self.run("git clone %s --single-branch --branch %s --recurse-submodules" % (self.repo_url, self.lib_tag))
@@ -35,6 +43,9 @@ class SocketIOClientCppConan(ConanFile):
         cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
         cmake.definitions["BUILD_WITH_TLS"] = self.options.with_ssl
         cmake.definitions["EMBED_CACERTS"] = self.options.embed_cacerts
+        if self.is_mingw:
+            cmake.definitions["CONAN_CXX_FLAGS"] = "-D_WEBSOCKETPP_MINGW_THREAD_"
+            tools.patch(patch_file="CMakeLists.txt-mingw.patch", base_path=os.path.join(self.build_folder, self.name))
         cmake.configure(source_dir=self.socketio_src)
         cmake.build()
         cmake.install()

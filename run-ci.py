@@ -16,7 +16,7 @@ def main() -> None:
     command = args.command
 
     ci.conan.set_home_isolation()
-    ci.cpp.update_conan_config()
+    ci.conan.update_config()
     should_upload = command == "deploy"
     ci.cpp.build_recipe(Path.getcwd(), upload=should_upload, conan_reference=None)
 

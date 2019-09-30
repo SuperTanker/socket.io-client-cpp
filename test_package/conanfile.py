@@ -24,6 +24,8 @@ class SocketioclientcppTestConan(ConanFile):
         if tools.cross_building(self.settings):
             if self.settings.os == "Emscripten":
                 exe_name = "example.js"
+            elif self.settings.os == "Windows":
+                exe_name = "example.exe"
             else:
                 exe_name = "example"
             assert(os.path.exists(os.path.join("bin", exe_name)))
