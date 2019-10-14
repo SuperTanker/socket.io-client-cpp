@@ -23,7 +23,7 @@ class SocketIOClientCppConan(ConanFile):
         return os.path.join(self.source_folder, self.name)
 
     def requirements(self):
-        self.requires("Boost/1.68.0@tanker/testing")
+        self.requires("Boost/1.71.0@tanker/testing")
         if self.options.with_ssl:
             self.requires("LibreSSL/2.9.2@tanker/testing")
         if self.is_mingw:
