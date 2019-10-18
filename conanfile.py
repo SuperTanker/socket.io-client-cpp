@@ -18,6 +18,10 @@ class SocketIOClientCppConan(ConanFile):
     def socketio_src(self):
         return os.path.join(self.source_folder, self.name)
 
+    @property
+    def is_mingw(self):
+        return self.settings.os == "Windows" and self.settings.compiler == "gcc"
+
     def requirements(self):
         self.requires("Boost/1.71.0@tanker/testing")
         if self.options.with_ssl:
@@ -33,6 +37,8 @@ class SocketIOClientCppConan(ConanFile):
             self.run("git submodule update --remote")
 
     def build(self):
+        if self.is_mingw:
+            tools.patch(patch_file="CMakeLists.txt-mingw.patch", base_path=os.path.join(self.build_folder, self.name))
         cmake = CMake(self)
         cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
         cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
