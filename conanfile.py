@@ -15,10 +15,6 @@ class SocketIOClientCppConan(ConanFile):
     exports_sources = "*.patch"
 
     @property
-    def is_mingw(self):
-        return self.settings.os == "Windows" and self.settings.compiler == "gcc"
-
-    @property
     def socketio_src(self):
         return os.path.join(self.source_folder, self.name)
 
@@ -26,8 +22,6 @@ class SocketIOClientCppConan(ConanFile):
         self.requires("Boost/1.71.0@tanker/testing")
         if self.options.with_ssl:
             self.requires("LibreSSL/2.9.2@tanker/testing")
-        if self.is_mingw:
-            self.requires("mingw-threads/1.0.0@tanker/testing")
 
     def configure(self):
         if not self.options.with_ssl and self.options.embed_cacerts:
@@ -44,9 +38,6 @@ class SocketIOClientCppConan(ConanFile):
         cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
         cmake.definitions["BUILD_WITH_TLS"] = self.options.with_ssl
         cmake.definitions["EMBED_CACERTS"] = self.options.embed_cacerts
-        if self.is_mingw:
-            cmake.definitions["CONAN_CXX_FLAGS"] = "-D_WEBSOCKETPP_MINGW_THREAD_"
-            tools.patch(patch_file="CMakeLists.txt-mingw.patch", base_path=os.path.join(self.build_folder, self.name))
         cmake.configure(source_dir=self.socketio_src)
         cmake.build()
         cmake.install()
