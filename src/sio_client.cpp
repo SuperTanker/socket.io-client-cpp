@@ -13,10 +13,17 @@ using std::stringstream;
 
 namespace sio
 {
+#ifdef  SIO_TLS
+    client::client(boost::asio::ssl::context &ctx):
+        m_impl(new client_impl(ctx))
+    {
+    }
+#else
     client::client():
         m_impl(new client_impl())
     {
     }
+#endif
     
     client::~client()
     {

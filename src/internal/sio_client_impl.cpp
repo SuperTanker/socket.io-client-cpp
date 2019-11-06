@@ -10,6 +10,11 @@
 #include "url_encode.h"
 #include <sstream>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#ifdef SIO_TLS
+#include <boost/asio/ssl/context.hpp>
+#endif
+
 #include <mutex>
 #include <cmath>
 // Comment this out to disable handshake logging to stdout
@@ -25,6 +30,14 @@ using namespace std;
 namespace sio
 {
     /*************************public:*************************/
+#ifdef SIO_TLS
+    client_impl::client_impl(boost::asio::ssl::context &ctx) :
+        client_impl()
+    {
+        m_context_ptr = context_ptr(&ctx, [](context_ptr::element_type* p) {});
+    }
+#endif
+
     client_impl::client_impl() :
         m_con_state(con_closed),
         m_ping_interval(0),
@@ -583,27 +596,7 @@ failed:
 #if SIO_TLS
     client_impl::context_ptr client_impl::on_tls_init(connection_hdl conn)
     {
-        context_ptr ctx = context_ptr(new  boost::asio::ssl::context(boost::asio::ssl::context::tlsv12));
-        boost::system::error_code ec;
-        ctx->set_options(boost::asio::ssl::context::default_workarounds |
-                             boost::asio::ssl::context::no_sslv2 |
-                             boost::asio::ssl::context::no_sslv3 |
-                             boost::asio::ssl::context::no_tlsv1 |
-                             boost::asio::ssl::context::no_tlsv1_1 |
-                             boost::asio::ssl::context::single_dh_use, ec);
-        ctx->set_verify_mode(boost::asio::ssl::verify_peer | boost::asio::ssl::verify_fail_if_no_peer_cert);
-
-        ctx->set_default_verify_paths();
-
-        auto hostname = websocketpp::uri(m_base_url).get_host();
-        ctx->set_verify_callback(boost::asio::ssl::rfc2818_verification(hostname));
-
-        if(ec)
-        {
-            cerr<<"Init tls failed,reason:"<< ec.message()<<endl;
-        }
-        
-        return ctx;
+        return m_context_ptr;
     }
 #endif
 }

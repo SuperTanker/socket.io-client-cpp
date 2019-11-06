@@ -12,6 +12,19 @@
 #include "sio_socket.h"
 #include "internal/sio_export.h"
 
+#ifdef SIO_TLS
+namespace boost
+{
+namespace asio
+{
+namespace ssl
+{
+class context;
+}
+}
+}
+#endif
+
 namespace sio
 {
     class client_impl;
@@ -32,7 +45,11 @@ namespace sio
         
         typedef std::function<void(std::string const& nsp)> socket_listener;
         
+#ifdef SIO_TLS
+        client(boost::asio::ssl::context &ctx);
+#else
         client();
+#endif
         ~client();
         
         //set listeners and event bindings.

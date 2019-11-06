@@ -54,6 +54,9 @@ namespace sio
             con_closing,
             con_closed
         };
+#if SIO_TLS
+        client_impl(boost::asio::ssl::context &ctx);
+#endif
         
         client_impl();
         
@@ -173,8 +176,8 @@ namespace sio
         void stop();
         
         #if SIO_TLS
-        typedef websocketpp::lib::shared_ptr<boost::asio::ssl::context> context_ptr;
-        
+        using context_ptr = websocketpp::lib::shared_ptr<boost::asio::ssl::context> ;
+        context_ptr m_context_ptr;
         context_ptr on_tls_init(connection_hdl con);
         #endif
         
