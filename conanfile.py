@@ -4,7 +4,7 @@ import os
 
 class SocketIOClientCppConan(ConanFile):
     name = "socket.io-client-cpp"
-    version = "1.6.2"
+    version = "1.6.3"
     lib_tag = version + ""
     license = "MIT"
     repo_url = "https://github.com/TankerHQ/socket.io-client-cpp"
@@ -59,3 +59,5 @@ class SocketIOClientCppConan(ConanFile):
         self.cpp_info.libs = ["sioclient"]
         if self.settings.os == "Windows" and self.options.with_ssl:
             self.cpp_info.libs.extend(["crypt32"])
+        if self.options.with_ssl:
+            self.cpp_info.defines.extend(["SIO_TLS"])
