@@ -9,8 +9,8 @@ class SocketIOClientCppConan(ConanFile):
     license = "MIT"
     repo_url = "https://github.com/TankerHQ/socket.io-client-cpp"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False], "with_ssl": [True, False], "embed_cacerts": [True, False]}
-    default_options = "shared=False", "fPIC=True", "with_ssl=True", "embed_cacerts=False"
+    options = {"shared": [True, False], "fPIC": [True, False], "with_ssl": [True, False]}
+    default_options = "shared=False", "fPIC=True", "with_ssl=True"
     generators = "cmake"
     exports_sources = "*.patch"
 
@@ -27,10 +27,6 @@ class SocketIOClientCppConan(ConanFile):
         if self.options.with_ssl:
             self.requires("LibreSSL/2.9.2@tanker/testing")
 
-    def configure(self):
-        if not self.options.with_ssl and self.options.embed_cacerts:
-            raise Exception("cannot embed cacerts without ssl")
-
     def source(self):
         self.run("git clone %s --single-branch --branch %s --recurse-submodules" % (self.repo_url, self.lib_tag))
         with tools.chdir(self.name):
@@ -43,7 +39,6 @@ class SocketIOClientCppConan(ConanFile):
         cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
         cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
         cmake.definitions["BUILD_WITH_TLS"] = self.options.with_ssl
-        cmake.definitions["EMBED_CACERTS"] = self.options.embed_cacerts
         cmake.configure(source_dir=self.socketio_src)
         cmake.build()
         cmake.install()
