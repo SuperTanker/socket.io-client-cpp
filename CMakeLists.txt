@@ -35,7 +35,7 @@ target_include_directories(sioclient PRIVATE
 set_property(TARGET sioclient PROPERTY CXX_STANDARD 11)
 set_property(TARGET sioclient PROPERTY CXX_STANDARD_EXTENSIONS OFF)
 set_property(TARGET sioclient PROPERTY CXX_STANDARD_REQUIRED ON)
-target_link_libraries(sioclient PRIVATE CONAN_PKG::Boost)
+target_link_libraries(sioclient PRIVATE CONAN_PKG::boost)
 
 if(BUILD_SHARED_LIBS)
 set_target_properties(sioclient
