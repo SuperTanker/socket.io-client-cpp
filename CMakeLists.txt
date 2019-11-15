@@ -27,8 +27,8 @@ target_compile_definitions(sioclient PRIVATE -DSIO_TLS)
 endif()
 
 target_include_directories(sioclient PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/src 
-    ${CMAKE_CURRENT_LIST_DIR}/lib/websocketpp 
+    ${CMAKE_CURRENT_LIST_DIR}/src
+    ${CMAKE_CURRENT_LIST_DIR}/lib/websocketpp
     ${CMAKE_CURRENT_LIST_DIR}/lib/rapidjson/include
 )
 
