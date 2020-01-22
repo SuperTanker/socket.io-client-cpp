@@ -201,8 +201,16 @@ namespace sio
     /*************************private:*************************/
     void client_impl::run_loop()
     {
-
-        m_client.run();
+        while (true) {
+            try {
+                m_client.run();
+                break;
+            } catch(std::exception const& oops) {
+                std::cerr << "Unexpected socketio exception: " << oops.what() << " (" << typeid(oops).name() << ")" << std::endl;
+            } catch(...) {
+                std::cerr << "Unexpected socketio exception." << std::endl;
+            }
+        }
         m_client.reset();
         m_client.get_alog().write(websocketpp::log::alevel::devel,
                                   "run loop end");
