@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "socket.io-client-cpp"
+version = "0.1.0"
+description = "C++ socket.io client"
+authors = ["Tanker team <tech@tanker.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+ci = "2020.02.2118"
+
+[[tool.poetry.source]]
+name = "tanker.local"
+url = "http://tanker.local:8181"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+

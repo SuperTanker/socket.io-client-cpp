@@ -1,5 +1,5 @@
 before_script:
-  - dmenv install
+  - poetry install
 
 stages:
   - build
@@ -15,19 +15,19 @@ build/linux:
   extends: .build
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py build
+    - poetry run python run-ci.py build
 
 build/macos:
   extends: .build
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py build
+    - poetry run python run-ci.py build
 
 build/windows:
   extends: .build
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py build
+    - poetry run python run-ci.py build
 
 
 .deploy:
@@ -40,16 +40,16 @@ deploy/linux:
   extends: .deploy
   tags: [linux]
   script:
-    - dmenv run -- python run-ci.py deploy
+    - poetry run python run-ci.py deploy
 
 deploy/macos:
   extends: .deploy
   tags: [macos]
   script:
-    - dmenv run -- python run-ci.py deploy
+    - poetry run python run-ci.py deploy
 
 deploy/windows:
   extends: .deploy
   tags: [windows]
   script:
-    - dmenv run -- python run-ci.py deploy
+    - poetry run python run-ci.py deploy
